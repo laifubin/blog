@@ -8,7 +8,7 @@ import { _searchBlog, TSearchBlogReq } from '@/api/blog'
 const detailsData = ref<Record<string, any>>({})
 const categoryList = ref<{ label: string, value: number }[]>([])
 const loading = ref(false)
-const blogList = ref([])
+const blogList = ref<Record<string, any>>([])
 _getCategoryList().then(data => {
   categoryList.value = data
 })
