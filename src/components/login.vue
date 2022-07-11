@@ -1,68 +1,49 @@
 <script setup lang="ts">
 import {ref, reactive} from 'vue'
-import {_login} from '@/api/login'
-import router from '@/router/index'
-import { useStore } from '@/store/index'
-import { storeToRefs } from 'pinia'
-import request from '@/utils/request'
+import { _login } from '@/api/login'
+import { _getMenu } from '@/api/menu'
+// import { injectRoutes } from '@/router/index'
+import { UserStore } from '@/store/user'
 import { Md5 } from 'ts-md5/dist/md5'
-import { log } from 'console'
- 
+import { ElMessage } from 'element-plus'
+
 const drawer = ref(false)
-const formRef = ref()
 const form = reactive({
-  account: '',
-  password: '123456'
+  name: '',
+  password: ''
 })
-const store = useStore()
-// const { menuList } = storeToRefs(store)
+const store = UserStore()
+const loading = ref(false)
 
 const onSubmit = ()=> {
-  request({
-    url: '/logined',
-    method: 'POST',
-    data: {
-      name: 'laifubin',
-      password: Md5.hashStr(form.password)
-    }
-  }).then(res => {
-    console.log(res, 'res=====')
-  })
-  console.log(Md5.hashStr(form.password), 2323)
-  console.log(Md5.hashStr(form.password), 55)
-  _login(form).then(res => {
-    // console.log('123', res, router.getRoutes());
- 
-  res.data.forEach((item: any) => {
-   router.addRoute( {
-            path: item.path,
-            name: item.name,
-            component: () => import(`../views/${item.name}.vue`),
-            meta: {
-              auth: true
-            }
+  loading.value = true
+  _login({ name: form.name, password: Md5.hashStr(form.password) }).then((res: any) => {
+    ElMessage.success(res.msg)
+    store.userName = res.data.name
+    const token = JSON.stringify({
+      ...res.data,
+      time: Date.now()
     })
-  })
+    localStorage.setItem('blog_token', token)
 
-  store.menuList.push(...res.data)
-    // store.$patch({
-    //   menuList: store.menuList.push(res)
-    // })
-    setTimeout(()=>{
-      console.log(store.menuList)
-    }, 5000)
+    _getMenu().then(data => {
+      // 添加菜单
+      store.updateMenuList(data)
+    })
+  }).finally(() => {
+    loading.value = false
   })
 }
 </script>
 <template>
-  <div class="w-2px h-50px" @click="drawer = true"></div>
+  <div v-loading="loading" class="w-2px h-50px" @click="drawer = true"/>
 
-  <el-drawer v-model="drawer" title="I am the title" custom-class="login-bg" :with-header="false" direction="ttb" size="61.8%">
-    <div class="absolute inset-0 m-auto pt-4 w-1/3 h-240px">
+  <el-drawer v-model="drawer" custom-class="login-bg" :with-header="false" direction="ttb" size="61.8%">
+    <div v-loading.fullscreen.lock="loading" class="absolute inset-0 m-auto pt-4 w-1/3 h-240px">
       <div class="text-3xl text-center mb-10">Hi there!</div>
       <el-form ref="formRefs" :model="form">
-        <el-form-item prop="account" label="账号" class="text-2xl">
-          <el-input v-model="form.account"></el-input>
+        <el-form-item prop="name" label="账号" class="text-2xl">
+          <el-input v-model="form.name"></el-input>
         </el-form-item>
     
         <el-form-item prop="account" label="密码">

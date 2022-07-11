@@ -1,6 +1,6 @@
 import { ref, computed, defineComponent, h, onMounted } from 'vue'
 import type { ComputedRef, DefineComponent } from 'vue'
-
+import { UserStore } from '@/store/user'
 /**
  * 生成水印背景图片
  * @param text 水印文字
@@ -74,8 +74,9 @@ function observeSelf (target: HTMLElement, style: ComputedRef<string>) {
 let comp: DefineComponent
 
 export function useWatermark () {
-
-  const watermark = ref( createWatermark('1234'))
+  const store = UserStore()
+  const watermark = computed(()=> createWatermark(store.userName || '游客'))
+  // const watermark = ref(createWatermark(store.userName))
 
   if (!comp) {
     comp = defineComponent({

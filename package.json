@@ -16,6 +16,7 @@
     "pinia": "^2.0.14",
     "ts-md5": "^1.2.11",
     "vue": "^3.2.25",
+    "vue-insert-component": "*",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {

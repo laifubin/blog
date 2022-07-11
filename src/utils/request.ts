@@ -1,8 +1,10 @@
 import axios from 'axios';
 import NProgress from 'nprogress'
 import type { AxiosRequestConfig } from 'axios'
-import {serialize} from './utils'
+import { serialize } from './utils'
+import { ElMessage } from 'element-plus'
 
+// const allowAuthPath = ['/blog/update', '/blog/delete', '/refreshToken', '/menu']
 const instance = axios.create({
   baseURL: '/api',
   // 默认超时时间
@@ -26,7 +28,8 @@ instance.interceptors.request.use<AxiosRequestConfig>((config: any) => {
 
   // 开启 progress bar
   NProgress.start()
-
+  const token = JSON.parse(localStorage.getItem('blog_token') ?? '{}').token
+  if (config.headers.auth !== false) config.headers['authorization'] = 'Bearer ' + token
   // 确保GET请求是最新的
   // if (config.method === 'get') {
   //   config.params = Object.assign({ _: Date.now() }, config.params || {})
@@ -53,6 +56,7 @@ instance.interceptors.response.use(async (res: any) => {
  
   // 如果请求为非200否者默认统一处理
   if (status !== 200) {
+    ElMessage.error(message)
     const err = new Error(message)
     return Promise.reject(err)
   }

@@ -49,14 +49,7 @@ export default {
      data: 'success'
     }
   },
-  _test: () => {
-    return {
-      code: 200,
-      msg: 'success',
-      data:testList
-    }
-  },
-  _login: () => {
+  login: () => {
     return {
       code: 200, 
       msg: 'success',

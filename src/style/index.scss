@@ -35,3 +35,22 @@ body {
 ::-webkit-scrollbar-thumb:window-inactive {
   background:var(--color-primary);
 }
+
+
+// tinymce 层级不够处理
+.tox-tinymce-aux {
+  z-index: 5000 !important;
+}
+
+.ellipsis-1 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  word-break: break-all;
+}
+
+.ellipsis-2 {
+  @extend .ellipsis-1;
+  -webkit-line-clamp: 2;
+}
